@@ -1,32 +1,71 @@
 <html>
     <body>
-       <form>
-            <label for="stnumber">Student ID:</label><br>
-            <input type="number" id="stnumber" name="stnumber"><br>
-            <label for="name">Name(LN, Fn, I):</label><br>
-            <input type="text" id="name" name="name"><br>
-            <label for="Bday">Birthday(mm/dd/yyyy):</label><br>
-            <input type="number" id="Bday" name="Bday"><br>
-            <label for="email">Email Address:</label><br>
-            <input type="email" id="email" name="email"><br>
-            <label for="Phoneno">Phone no:</label><br>
-            <input type="number" id="Phoneno" name="Phoneno"><br>
-            <label for="Gradelvl">Grade Level:</label>
-            <select>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-                <option>11</option>
-                <option>12</option>
-            </select><br>
-            <input type="radio" id="Intern" name="labuubu" value="Intern">
-            <label for="Intern">Intern</label><br>
-            <input type="radio" id="Extern" name="labuubu" value="Extern">
-            <label for="Extern">Extern</label><br>
-            <label for="Club/Organization">Club/Organization:</label>
-            <select>
-                <option>N/A</option>
+
+        <h2 id="title">Club Registration</h2>
+
+        <div id="formPart">
+            <form id="form">
+                <label for="stnumber">Student ID:</label><br>
+                <input type="number" id="stnumber"><br>
+
+                <label for="name">Name(LN, Fn, I):</label><br>
+                <input type="text" id="name"><br>
+
+                <label for="Bday">Birthday(mm/dd/yyyy):</label><br>
+                <input type="number" id="Bday"><br>
+
+                <label for="email">Email Address:</label><br>
+                <input type="email" id="email"><br>
+
+                <label for="Phoneno">Phone no:</label><br>
+                <input type="number" id="Phoneno"><br>
+
+                <label for="Gradelvl">Grade Level:</label>
+                <select id="grade">
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                </select><br>
+
+                <input type="radio" name="labuubu" value="Intern"> Intern<br>
+                <input type="radio" name="labuubu" value="Extern"> Extern<br>
+
+                <label>Club/Organization:</label>
+                <select id="club">
+                    <option>N/A</option>
+                    <option>Alianti</option>
+                    <option>Astrosoc</option>
+                    <option>Bravura</option>
+                    <option>Computron</option>
+                    <option>Exposure</option>
+                    <option>Intalye</option>
+                    <option>Invictus</option>
+                    <option>Kislap</option>
+                    <option>Labuyo</option>
+                    <option>Pallastro</option>
+                    <option>Pisay.XYZ</option>
+                    <option>Polvere</option>
+                    <option>Sigasig</option>
+                    <option>Volant</option>
+                </select><br>
+
+                <label for="Reason">Why do you want to join us?:</label><br>
+                <input type="textarea" id="Reason"><br>
+
+                <input type="submit" value="Register"><br>
+                <input type="button" value="View Sign-Ups" onclick="showView()"><br>
+            </form>
+
+            <p id="msg"></p>
+        </div>
+
+        <div id="viewPart" style="display:none;">
+            <label>Filter Club:</label>
+            <select id="filter">
+                <option value="ALL">ALL</option>
                 <option>Alianti</option>
                 <option>Astrosoc</option>
                 <option>Bravura</option>
@@ -41,11 +80,100 @@
                 <option>Polvere</option>
                 <option>Sigasig</option>
                 <option>Volant</option>
-            </select><br>
-            <label for="Reason">Why do you want to join us?:</label><br>
-            <input type="textarea" id="Reason" name="Reason"><br>
-            <input type="Submit" id="Submit" name="Register" value="Register"><br>
-            <input type="button" id="Reset" name="Reset" value="Reset"><br>
-        </form>
+            </select>
+
+            <p id="total"></p>
+
+            <table border="1">
+                <tr>
+                    <th>Name</th>
+                    <th>ID</th>
+                    <th>Club</th>
+                </tr>
+                <tbody id="list"></tbody>
+            </table>
+
+            <p id="viewMsg"></p>
+
+            <button onclick="showForm()">Back</button>
+        </div>
+
+        <script>
+            let data = localStorage.getItem("signups")
+            let signups = data ? JSON.parse(data) : []
+
+            document.getElementById("form").onsubmit = function(e) {
+                e.preventDefault()
+                if (!confirm("Submit?")) return
+
+                let studentName = document.getElementById("name")
+
+                let type = ""
+                let radios = document.getElementsByName("labuubu")
+                for (let i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) type = radios[i].value
+                }
+
+                let obj = {
+                    id: stnumber.value,
+                    name: studentName.value,
+                    club: club.value,
+                    type: type
+                }
+
+                signups.push(obj)
+                localStorage.setItem("signups", JSON.stringify(signups))
+                msg.innerHTML = "Saved"
+                this.reset()
+            }
+
+            function showView() {
+                title.innerHTML = "View Sign-Ups"
+                formPart.style.display = "none"
+                viewPart.style.display = "block"
+                showList(signups)
+            }
+
+            function showForm() {
+                title.innerHTML = "Club Registration"
+                viewPart.style.display = "none"
+                formPart.style.display = "block"
+            }
+
+            filter.onchange = function() {
+                if (this.value == "ALL") {
+                    showList(signups)
+                } else {
+                    let f = signups.filter(s => s.club == this.value)
+                    showList(f)
+                }
+            }
+
+            function showList(arr) {
+                list.innerHTML = ""
+                viewMsg.innerHTML = ""
+
+                if (signups.length == 0) {
+                    viewMsg.innerHTML = "No sign-ups saved"
+                    total.innerHTML = "Total: 0"
+                    return
+                }
+
+                if (arr.length == 0) {
+                    viewMsg.innerHTML = "No sign-ups for this club"
+                    total.innerHTML = "Total: 0"
+                    return
+                }
+
+                for (let i = 0; i < arr.length; i++) {
+                    let r = document.createElement("tr")
+                    r.innerHTML = "<td>" + arr[i].name + "</td><td>" + arr[i].id + "</td><td>" + arr[i].club + "</td>"
+                    list.appendChild(r)
+                }
+
+                total.innerHTML = "Total: " + arr.length
+            }
+        </script>
+
     </body>
 </html>
