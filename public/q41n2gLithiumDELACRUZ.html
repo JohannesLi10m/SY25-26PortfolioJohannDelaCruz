@@ -94,11 +94,28 @@
       font-size: 20px;
       margin-left: 5px;
     }
+
+    .delete-btn {
+      width: auto;
+      padding: 4px 10px;
+      background: #dc3545;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: background 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #a71d2a;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Add a Movie</h2>
+    <h2>Add / Update a Movie Rating</h2>
     
     <label for="title">Title:</label>
     <input type="text" id="title">
@@ -132,6 +149,7 @@
   <script>
     let selectedRating = 0;
 
+    // Handle star clicks
     document.querySelectorAll(".star").forEach(star => {
       star.addEventListener("click", function() {
         selectedRating = this.getAttribute("data-value");
@@ -169,12 +187,24 @@
         return;
       }
 
-      const newMovie = { title, year, genre, rating };
-
       const existing = localStorage.getItem('movies');
       const movies = existing ? JSON.parse(existing) : [];
 
-      movies.push(newMovie);
+      const existingIndex = movies.findIndex(m => m.title.toLowerCase() === title.toLowerCase());
+
+      if (existingIndex !== -1) {
+        const oldRating = parseFloat(movies[existingIndex].rating);
+        const newRating = parseFloat(rating);
+        const avgRating = Math.round((oldRating + newRating) / 2);
+
+        movies[existingIndex].year = year;
+        movies[existingIndex].genre = genre;
+        movies[existingIndex].rating = String(avgRating);
+      } else {
+        const newMovie = { title, year, genre, rating: String(rating) };
+        movies.push(newMovie);
+      }
+
       localStorage.setItem('movies', JSON.stringify(movies));
 
       document.getElementById('title').value = '';
@@ -186,6 +216,19 @@
       displayMovies();
     }
 
+    function deleteMovie(index) {
+      const confirmed = confirm("Are you sure you want to delete?");
+      if (!confirmed) return;
+
+      const existing = localStorage.getItem('movies');
+      const movies = existing ? JSON.parse(existing) : [];
+
+      movies.splice(index, 1);
+      localStorage.setItem('movies', JSON.stringify(movies));
+
+      displayMovies();
+    }
+
     function displayMovies() {
       const movieList = document.getElementById('movieList');
       movieList.innerHTML = '';
@@ -193,18 +236,19 @@
       const existing = localStorage.getItem('movies');
       const movies = existing ? JSON.parse(existing) : [];
 
-      movies.forEach(movie => {
+      movies.forEach((movie, index) => {
         const li = document.createElement('li');
         const stars = '★'.repeat(movie.rating) + '☆'.repeat(5 - movie.rating);
         li.innerHTML = `
-          <strong>${movie.title}</strong> (${movie.year}) — ${movie.genre}
+          <strong>${movie.title}</strong> (${movie.year}) — ${movie.genre}, Rating:
           <span class="rating-display">${stars}</span>
+          <button class="delete-btn" onclick="deleteMovie(${index})">Delete</button>
         `;
         movieList.appendChild(li);
       });
     }
 
-    window.onload = displayMovies;
+window.onload = displayMovies;
   </script>
 </body>
 </html>
