@@ -1,6 +1,6 @@
-DELA CRUZ, Johann Sebastian A. 9-Li
+# DELA CRUZ, Johann Sebastian A. 9-Li answers to 3rd graded
 1. js line 1, plotPoint() - no parameters, arguments are passed thru HTML, changed to function plotPoint(x0, y0, x, y)
-2. js line 2, console.log(x0, y0, x, y) - undefined, fixed by adding parameters to plotPoint
+2. js line 2, console.log(x0, y0, x, y) - undefined, fix ed by adding parameters to plotPoint
 3. js line 3, in1 - undefined, fixed by adding var in1 = document.getElementById("in1");
 4. js line 12, 15, 18, 21, 24, out1 - undefined, fixed by adding var out1 = document.getElementById("out1");
 5. js line 6, point.styleleft - syntax error, edited to point.style.left
