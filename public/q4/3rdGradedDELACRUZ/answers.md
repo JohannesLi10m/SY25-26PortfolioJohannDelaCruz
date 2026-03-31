@@ -1,3 +1,4 @@
+DELA CRUZ, Johann Sebastian A. 9-Li
 1. js line 1, plotPoint() - no parameters, arguments are passed thru HTML, changed to function plotPoint(x0, y0, x, y)
 2. js line 2, console.log(x0, y0, x, y) - undefined, fixed by adding parameters to plotPoint
 3. js line 3, in1 - undefined, fixed by adding var in1 = document.getElementById("in1");
